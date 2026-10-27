@@ -79,6 +79,7 @@ classDiagram
 
     class WebLauncher {
         +launch() void
+        +stop() void
     }
 
     class Main {

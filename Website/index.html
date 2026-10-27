@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Planner - Strategy Pattern</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --success: #4ade80;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-group.full {
+            grid-column: span 2;
+        }
+        label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 0.5rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: var(--accent);
+        }
+        .strategies-title {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.8rem;
+        }
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .strategy-btn {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 0.75rem;
+            padding: 1rem 0.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .strategy-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .strategy-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .strategy-btn .icon {
+            font-size: 1.8rem;
+        }
+        .strategy-btn .name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .result-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .result-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .stat-box {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--card-border);
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+        .stat-value.highlight {
+            color: var(--success);
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .comparison-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .explanation-box {
+            background: rgba(56, 189, 248, 0.05);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .explanation-box strong {
+            color: var(--text-main);
+        }
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full {
+                grid-column: span 1;
+            }
+            .strategies-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">Strategy Design Pattern</div>
+            <h1>Route Planner</h1>
+            <p>Select your transport strategy at runtime</p>
+        </header>
+
+        <div class="card">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="start">Starting Point</label>
+                    <input type="text" id="start" value="Astana Central Station" placeholder="e.g. Origin">
+                </div>
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" value="Nazarbayev University" placeholder="e.g. Destination">
+                </div>
+                <div class="form-group full">
+                    <label for="distance">Distance (kilometers)</label>
+                    <input type="number" id="distance" value="12" min="0.1" step="0.5">
+                </div>
+            </div>
+
+            <div class="strategies-title">Choose how you want to travel (Strategy):</div>
+            <div class="strategies-grid">
+                <button class="strategy-btn active" data-type="Car">
+                    <span class="icon">🚗</span>
+                    <span class="name">Car</span>
+                </button>
+                <button class="strategy-btn" data-type="Walk">
+                    <span class="icon">🚶</span>
+                    <span class="name">Walk</span>
+                </button>
+                <button class="strategy-btn" data-type="Cycle">
+                    <span class="icon">🚲</span>
+                    <span class="name">Cycle</span>
+                </button>
+                <button class="strategy-btn" data-type="Bus">
+                    <span class="icon">🚌</span>
+                    <span class="name">Bus</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="result-card">
+            <h2 class="result-title" id="resultRouteTitle">Route: Astana Central Station -> Nazarbayev University</h2>
+            <div class="result-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Active Strategy</div>
+                    <div class="stat-value" id="resTransport">Car</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Distance</div>
+                    <div class="stat-value" id="resDistance">12.0 km</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Travel Time</div>
+                    <div class="stat-value highlight" id="resTime">14 min</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Estimated Cost</div>
+                    <div class="stat-value highlight" id="resCost">300.0 KZT</div>
+                </div>
+            </div>
+
+            <div class="explanation-box" id="explanationText">
+                <strong>Strategy Pattern Explanation:</strong><br>
+                You chose the Car strategy.<br>
+                The Navigator (Context) delegates calculations to the chosen strategy without knowing algorithm details.<br>
+                Every strategy implements RouteStrategy, allowing runtime interchangeability without conditional branching.
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 0.75rem; color: var(--text-main);">All Transport Strategies Comparison</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Transport</th>
+                        <th>Speed</th>
+                        <th>Travel Time</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const strategies = {
+            Car: {
+                name: 'Car',
+                icon: '🚗',
+                speed: 50,
+                calcCost: (dist) => dist * 25,
+                calcTime: (dist) => Math.round(dist / 50 * 60)
+            },
+            Walk: {
+                name: 'Walk',
+                icon: '🚶',
+                speed: 5,
+                calcCost: (dist) => 0,
+                calcTime: (dist) => Math.round(dist / 5 * 60)
+            },
+            Cycle: {
+                name: 'Cycle',
+                icon: '🚲',
+                speed: 15,
+                calcCost: (dist) => 0,
+                calcTime: (dist) => Math.round(dist / 15 * 60)
+            },
+            Bus: {
+                name: 'Bus',
+                icon: '🚌',
+                speed: 25,
+                calcCost: (dist) => 100,
+                calcTime: (dist) => Math.round(dist / 25 * 60)
+            }
+        };
+
+        let currentStrategy = 'Car';
+
+        function updatePlan() {
+            const start = document.getElementById('start').value.trim() || 'Starting Point';
+            const destination = document.getElementById('destination').value.trim() || 'Destination';
+            const distance = Math.max(0.1, parseFloat(document.getElementById('distance').value) || 1);
+
+            document.getElementById('resultRouteTitle').textContent = `Route: ${start} -> ${destination}`;
+            document.getElementById('resDistance').textContent = `${distance.toFixed(1)} km`;
+
+            const strategy = strategies[currentStrategy];
+            const time = strategy.calcTime(distance);
+            const cost = strategy.calcCost(distance);
+
+            document.getElementById('resTransport').textContent = strategy.name;
+            document.getElementById('resTime').textContent = `${time} min`;
+            document.getElementById('resCost').textContent = `${cost.toFixed(1)} KZT`;
+
+            document.getElementById('explanationText').innerHTML = `
+                <strong>Strategy Pattern Explanation:</strong><br>
+                You chose the <strong>${strategy.name}</strong> strategy.<br>
+                The Navigator (Context) did not calculate anything by itself. It passed the work to the ${strategy.name}Strategy object.<br>
+                Every strategy implements the same RouteStrategy interface, so the Navigator treats all of them the same way.<br>
+                There is no if/else or switch in the Navigator. The choice of algorithm is made once, by the Client, when calling setStrategy.<br>
+                You can change the strategy at runtime by picking another transport above.
+            `;
+
+            const tbody = document.getElementById('comparisonTableBody');
+            tbody.innerHTML = '';
+            for (const key of Object.keys(strategies)) {
+                const s = strategies[key];
+                const t = s.calcTime(distance);
+                const c = s.calcCost(distance);
+                const isSelected = key === currentStrategy;
+                const tr = document.createElement('tr');
+                if (isSelected) {
+                    tr.style.background = 'rgba(56, 189, 248, 0.1)';
+                    tr.style.fontWeight = 'bold';
+                }
+                tr.innerHTML = `
+                    <td>${s.icon} ${s.name} ${isSelected ? '(Selected)' : ''}</td>
+                    <td>${s.speed} km/h</td>
+                    <td>${t} min</td>
+                    <td>${c.toFixed(1)} KZT</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        document.querySelectorAll('.strategy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.strategy-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentStrategy = btn.dataset.type;
+                updatePlan();
+            });
+        });
+
+        document.getElementById('start').addEventListener('input', updatePlan);
+        document.getElementById('destination').addEventListener('input', updatePlan);
+        document.getElementById('distance').addEventListener('input', updatePlan);
+
+        updatePlan();
+    </script>
+</body>
+</html>

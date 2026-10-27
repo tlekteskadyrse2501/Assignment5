@@ -20,6 +20,7 @@ public class Main {
                 webLauncher.launch();
             } else if (choice == 0) {
                 System.out.println("Goodbye!");
+                WebLauncher.stop();
                 running = false;
             }
         }

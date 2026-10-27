@@ -16,7 +16,7 @@ In this project:
 
 When the program starts, it presents a mode selection menu:
 1. Console mode: The interactive command-line flow where the user inputs route points, distance, and compares transport strategies at runtime. Exiting console mode returns to the mode menu.
-2. Web mode: Launches the graphical website interface in your default web browser. Note: web mode needs Website/index.html in the folder the program was started from. If the file is not found, an informative message is printed and the program returns to the mode menu.
+2. Web mode: Launches the graphical website interface on localhost (http://localhost:8080) in your default web browser. Note: web mode needs Website/index.html in the folder the program was started from. If the file is not found, an informative message is printed and the program returns to the mode menu.
 0. Exit: Prints a goodbye message and terminates the program.
 
 ## Project Structure
@@ -36,7 +36,7 @@ Assignment5/
         BusStrategy.java      - Concrete strategy: travel by bus
         ConsoleReader.java    - Helper for reading and validating console input
         PatternExplainer.java - Produces the pattern explanation text
-        WebLauncher.java      - Opens the web mode interface in the default browser
+        WebLauncher.java      - Serves and opens the web mode interface on localhost
     Report/                   - Assignment report
         Assignment5_Strategy_Report_Tlektes_Kadyr.docx
 ```
