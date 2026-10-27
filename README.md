@@ -12,6 +12,13 @@ In this project:
 - Context: Navigator
 - Client: Main
 
+## Two Modes
+
+When the program starts, it presents a mode selection menu:
+1. Console mode: The interactive command-line flow where the user inputs route points, distance, and compares transport strategies at runtime. Exiting console mode returns to the mode menu.
+2. Web mode: Launches the graphical website interface in your default web browser. Note: web mode needs Website/index.html in the folder the program was started from. If the file is not found, an informative message is printed and the program returns to the mode menu.
+0. Exit: Prints a goodbye message and terminates the program.
+
 ## Project Structure
 
 ```
@@ -19,7 +26,7 @@ Assignment5/
     README.md                 - This file
     UmlDiagram.md             - UML class diagram in Mermaid syntax
     Source/                   - All Java source files
-        Main.java             - The Client: runs the menu, selects strategy
+        Main.java             - The Client: shows mode menu, coordinates console mode
         Navigator.java        - The Context: holds strategy, delegates work
         Route.java            - Data class for route results
         RouteStrategy.java    - The Strategy interface
@@ -29,6 +36,7 @@ Assignment5/
         BusStrategy.java      - Concrete strategy: travel by bus
         ConsoleReader.java    - Helper for reading and validating console input
         PatternExplainer.java - Produces the pattern explanation text
+        WebLauncher.java      - Opens the web mode interface in the default browser
     Report/                   - Assignment report
         Assignment5_Strategy_Report_Tlektes_Kadyr.docx
 ```
@@ -56,6 +64,13 @@ On Windows, use the same commands in PowerShell or cmd from the project root. Th
 ## Example Console Session
 
 ```
+Route Planner
+Choose the mode:
+1. Console mode
+2. Web mode
+0. Exit
+Your choice: 1
+
 Welcome to the Route Planner!
 
 Enter starting point: Astana Central Station
@@ -93,25 +108,12 @@ Choose how you want to travel:
 4. Bus
 5. Enter a new route
 0. Exit
-Your choice: 2
+Your choice: 0
 
-Route: Astana Central Station -> Nazarbayev University
-Transport: Walk
-Distance: 12.0 km
-Travel time: 144 minutes
-Cost: 0.0 KZT
-
---- Strategy Pattern Explanation ---
-You chose the Walk strategy.
-...
------------------------------------
-
-Choose how you want to travel:
-1. Car
-2. Walk
-3. Cycle
-4. Bus
-5. Enter a new route
+Route Planner
+Choose the mode:
+1. Console mode
+2. Web mode
 0. Exit
 Your choice: 0
 

@@ -77,8 +77,14 @@ classDiagram
         +explain(chosenStrategy: RouteStrategy) String
     }
 
+    class WebLauncher {
+        +launch() void
+    }
+
     class Main {
         +main(args: String[]) void
+        -printModeMenu() void
+        -runConsoleMode(consoleReader: ConsoleReader) void
         -printMenu(strategies: List) void
     }
 
@@ -92,4 +98,5 @@ classDiagram
     Main ..> RouteStrategy : configures
     Main ..> ConsoleReader : uses
     Main ..> PatternExplainer : uses
+    Main ..> WebLauncher : uses
 ```
